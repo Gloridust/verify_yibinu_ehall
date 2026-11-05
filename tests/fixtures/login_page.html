@@ -1,0 +1,128 @@
+<!DOCTYPE html><html><head><meta charset='utf-8'></head><body>
+<script>
+        var inputUserNameTip = "\u8BF7\u8F93\u5165\u7528\u6237\u540D";
+        var inputPasswordTip = "\u8BF7\u8F93\u5165\u5BC6\u7801";
+        var inputCodeTip = "\u8BF7\u8F93\u5165\u9A8C\u8BC1\u7801";
+        var qrLoginTip = "\u626B\u7801\u767B\u5F55";
+        var qrInvalidTip = "\u4E8C\u7EF4\u7801\u5DF2\u5931\u6548\uFF0C\u70B9\u51FB\u5237\u65B0";
+
+        var inputMobileTip = "\u8BF7\u8F93\u5165\u624B\u673A\u53F7\u6216\u5B66\u53F7";
+        var inputDynamicTip = "\u8BF7\u8F93\u5165\u9A8C\u8BC1\u7801";
+        var getDynamicCodeTip = "\u83B7\u53D6\u9A8C\u8BC1\u7801";
+        var inputDynamicGetCode = "\u83B7\u53D6\u9A8C\u8BC1\u7801";
+        var excludeRegular = "\u7528\u6237\u540D\u5305\u542B\u7279\u6B8A\u5B57\u7B26";
+        //不转码，防止参数丢失
+        var service = ["https:\/\/ehall.yibinu.edu.cn:443\/login?service=https:\/\/ehall.yibinu.edu.cn\/new\/index.html"];
+        var type = null;
+        var jsonObject = {"pcLogoPath":null,"pcThemeColor":null,"officialUrl":null,"defaultWxQrCode":0,"wxQrCode":null,"defaultImage":0,"imageType":1,"shufflingTime":5,"shufflingStyle":2,"imageNames":["default_login.jpg"],"mobileLogoPath":null,"mobileThemeColor":null,"mobileModel":0,"mobileImages":["default_mobile_login.png"],"otherModel":0,"otherImages":["default_auth_serv_bg.png"]};
+        var reg = "[$:{}]";
+        var qrCodeLoginType = "1";
+        var frontBackKey = "rjBFAaHsNkKAhpoi";
+    </script>
+<script type="text/javascript">
+        if(service == '' || !service){
+            service = '';//saml后缀
+        }
+        var isQrLogin = "true";
+        var isQrLoginEnabled = "true"
+        var captchaSwitch = "1";
+        var needCaptcha = "";
+        var _fidoEnabled="false";
+        var _fidoGuideEnabled = "false" // 3.8.2.SP4 是否开启fido引导
+        var _fidoGuideBindType = "" // 3.8.2.SP4 fido引导绑定方式
+        var is_dynamicLogin = "true";
+        var is_userNameLogin = "true";
+        var contextPath = "/authserver";
+        var cllt = "";
+        var _badCredentialsCount="0";
+        var rememberMeTip = '开启后7天内无需再次登录，主动退出登录或使用浏览器无痕模式访问后，此功能失效'
+    </script>
+<div id="pwdLoginDiv" style="display: none">
+    <div>
+		<form class="loginFromClass" method="post" id="pwdFromId" action="/authserver/login">
+			<div class="form">
+				<!-- 用户名密码登录 --><div class="m-account">
+					<div class="username item">
+						<p class="account-title pc-name lang_text_ellipsis">用户名</p>
+						<input id="username" name="username" type="text" class="change-input-color" onfocusout="checkUserCaptcha()" placeholder="请输入学号/工号" title="请输入学号/工号" value=""><div id="nameErrorTip" class="item-error-tip lang_text_ellipsis"></div>
+					</div>
+					<div class="password item">
+						<p class="account-title pc-pass lang_text_ellipsis">密码</p>
+						<input id="password" name="passwordText" type="password" class="change-input-color no-auto-input" readonly
+							   placeholder="请输入密码" title="请输入密码" maxlength="32"><input id="saltPassword" name="password" type="hidden"><a class="ge-input-eye eye-hide"></a>
+						<div id="pwdErrorTip" class="item-error-tip lang_text_ellipsis"></div>
+					</div>
+					<div class="captcha item hide" id="captchaDiv">
+						<p id="captchaTitle" class="account-title pc-captcha lang_text_ellipsis hide">验证码</p>
+						<input type="text" id="captcha" name="captcha" autocomplete="off" class="change-input-color"
+							   placeholder="请输入验证码" title="请输入验证码" maxlength="10"><span class="captcha-img">
+							<img id="captchaImg" alt="验证码错误" height="30px"><a class="mask-inner captcha-refresh" onclick="reloadCaptcha(true)" href="javascript:void(0);">刷新</a>
+						</span>
+						<div id="captchaErrorTip" class="item-error-tip lang_text_ellipsis"></div>
+					</div>
+					<div style="clear: both"></div>
+				</div>
+				<div class="ge-btn">
+					<div id="formErrorTip" class="form-errorTip lang_text_ellipsis" style="margin-bottom: 12px;">
+						<span id="showErrorTip" class="form-error"></span>
+						<span id="showWarnTip" class="form-warn"></span>
+					</div>
+					<div class="btn">
+						<a id="login_submit" href="javascript:void(0);" class="login-btn change-bg-color" onclick="startLogin(this)">登录</a>
+					</div>
+				</div>
+			</div>
+			<input type="hidden" id="_eventId" name="_eventId" value="submit" /><input type="hidden" id="cllt" name="cllt" value="userNameLogin"><input type="hidden" id="dllt" name="dllt" value="generalLogin"><input type="hidden" id="lt" name="lt" value="" /><input type="hidden" id="pwdEncryptSalt" value="G9KhHtvLf0t2HKrD" /><input type="hidden" id="execution" name="execution" value="e1s1" /></form>
+	</div>
+</div>
+<div id="phoneLoginDiv" style="display: none">
+    <div>
+		<form class="loginFromClass" method="post" id="phoneFromId" action="/authserver/login">
+			<div class="form">
+				<!-- 动态码登录 --><div class="m-phone">
+					<div class="username item" style="overflow: visible;">
+						<p class="account-title pc-mobile">
+							<span class="lang_text_ellipsis">手机号</span>
+							<span class="item" style="position: absolute;">
+								<img class="mobile-tip" src="/authserver/cusTheme/customStatic/web/images/question.png" height="16px"><span class="mobile-tip-prompt mobile-item-show">海外手机请按“国家代码-手机号”的格式输入，如：1-888888</span>
+							</span>
+						</p>
+						<input type="text" id="username" name="username" class="change-input-color"
+							   placeholder="请输入学号/工号" title="请输入学号/工号" value=""><div id="nameErrorTip" class="item-error-tip lang_text_ellipsis"></div>
+					</div>
+					<div class="captcha item" id="captchaDiv">
+						<p id="captchaTitle" class="account-title pc-captcha lang_text_ellipsis">图形验证码</p>
+						<input type="text" id="captcha" name="captcha" autocomplete="off" class="change-input-color"
+							   placeholder="请输入验证码" title="请输入验证码" maxlength="10"><span class="captcha-img">
+							<img id="captchaImg" alt="验证码错误" height="30px"><a class="mask-inner captcha-refresh" onclick="reloadCaptcha(true)" href="javascript:void(0);">刷新</a>
+						</span>
+						<div id="captchaErrorTip" class="item-error-tip lang_text_ellipsis"></div>
+					</div>
+					<div class="code item">
+						<p class="account-title pc-code lang_text_ellipsis">短信验证码</p>
+						<i class="auth_icon auth_icon_bar"></i>
+						<input type="text" id="dynamicCode" name="dynamicCode" autocomplete="off" class="change-input-color"
+							   placeholder="请输入短信验证码" title="请输入短信验证码" maxlength="10"><a class="get-code text_ellipsis" href="javascript:void(0)" onclick="startDynamicCode()" title="获取验证码">
+							<span class="change-color">获取验证码</span>
+						</a>
+						<a class="get-code-tip get-code text_ellipsis" style="display: none;" href="javascript:void(0)" title="后重发">
+							<span class="getCodeText change-color">120</span>
+							<span style="color: #86909C;">后重发</span>
+						</a>
+						<div id="dynamicErrorTip" class="item-error-tip lang_text_ellipsis"></div>
+					</div>
+				</div>
+			</div>
+			<div class="ge-btn">
+				<div id="formErrorTip" class="form-errorTip lang_text_ellipsis">
+					<span id="showErrorTip" class="form-error"></span>
+					<span id="showWarnTip" class="form-warn"></span>&nbsp;
+				</div>
+				<div class="btn">
+					<a id="login_submit" href="javascript:void(0);" class="login-btn change-bg-color" onclick="startLogin(this)">登录</a>
+				</div>
+			</div>
+			<input type="hidden" id="_eventId" name="_eventId" value="submit" /><input type="hidden" id="cllt" name="cllt" value="dynamicLogin"><input type="hidden" id="dllt" name="dllt" value="generalLogin"><input type="hidden" id="lt" name="lt" value="" /><input type="hidden" id="pwdEncryptSalt" value="G9KhHtvLf0t2HKrD" /><input type="hidden" id="execution" name="execution" value="e1s1" /></form>
+	</div>
+</div>
+</body></html>
