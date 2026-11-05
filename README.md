@@ -67,11 +67,47 @@ ok, msg = client.login_with_sms("13800000000", "123456")
 
 ## 测试
 
+### 1. 离线单元测试（不联网）
+
 ```bash
+pip install requests beautifulsoup4 pycryptodome
 python -m unittest discover -s tests -v
 ```
 
-测试为离线测试，用假适配器模拟上游接口，页面 fixture 取自升级后的真实登录页。
+用假适配器模拟上游接口，页面 fixture 取自升级后的真实登录页。
+
+### 2. 真实上游联调（需要你本人的账号）
+
+验证码需要人工查看并输入，脚本会把图片保存到临时文件并打印路径，请打开图片后在终端输入。
+
+```bash
+# 账号密码登录（密码用单引号包裹）
+python verify_yibinu.py password <学号> '<密码>'
+
+# 短信登录：依次输入图形验证码、收到的短信验证码
+python verify_yibinu.py sms <手机号>
+
+# 输出调试日志
+python verify_yibinu.py --debug password <学号> '<密码>'
+
+# 服务器证书链有问题时的临时排查手段（不推荐）
+python verify_yibinu.py --insecure password <学号> '<密码>'
+```
+
+预期结果：成功输出 `Result: Success`（退出码 0）；失败输出 `Result: Failed` 和上游返回的原因（退出码 1）。
+
+### 3. 只测只读接口（不提交任何凭据）
+
+```bash
+python - <<'EOF'
+import verify_yibinu as v
+c = v.YibinuAuth()
+page = c.load_login_page()
+print(page["captcha_switch"], list(page["forms"]))   # 期望: 1 ['pwdFromId', 'phoneFromId']
+print(c.need_captcha("任意学号"))                      # 期望: True / False
+print(len(c.fetch_captcha()))                         # 期望: 约 1~2 KB 的图片字节数
+EOF
+```
 
 ## 许可证
 
