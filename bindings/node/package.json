@@ -1,0 +1,16 @@
+{
+  "name": "verify-yibinu",
+  "version": "0.1.0",
+  "description": "宜宾学院统一身份认证登录验证（Rust 实现的 Node.js 绑定）",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "license": "MIT",
+  "repository": "https://github.com/Gloridust/verify_yibinu_ehall",
+  "engines": { "node": ">=16" },
+  "files": ["index.js", "index.d.ts", "yibinu_auth.node"],
+  "scripts": {
+    "build": "node scripts/build.js",
+    "build:debug": "node scripts/build.js --debug",
+    "test": "node --test"
+  }
+}

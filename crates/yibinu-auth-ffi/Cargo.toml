@@ -1,0 +1,21 @@
+[package]
+name = "yibinu-auth-ffi"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "yibinu-auth 的 C ABI（供 Go / C / 其他语言通过 FFI 调用）"
+
+[lib]
+name = "yibinu_auth_ffi"
+crate-type = ["cdylib", "staticlib"]
+
+[features]
+vendored-openssl = ["yibinu-auth/vendored-openssl"]
+
+[dependencies]
+yibinu-auth = { path = "../yibinu-auth" }
+serde = "1"
+serde_json = "1"
+base64 = "0.22"

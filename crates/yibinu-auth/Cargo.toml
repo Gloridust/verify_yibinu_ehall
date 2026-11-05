@@ -1,0 +1,30 @@
+[package]
+name = "yibinu-auth"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "宜宾学院统一身份认证登录验证（账号密码 / 短信 / 图形验证码）"
+
+[features]
+# 静态编译 OpenSSL（构建 Python wheel / Node 预编译包时使用，免去目标机器安装 libssl）
+vendored-openssl = ["openssl/vendored"]
+
+[dependencies]
+aes = "0.8"
+base64 = "0.22"
+cbc = "0.1"
+cipher = { version = "0.4", features = ["alloc", "block-padding"] }
+openssl = "0.10"
+openssl-probe = "0.2.2"
+rand = "0.8"
+scraper = "0.20"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+ureq = { version = "2", default-features = false, features = ["cookies", "json"] }
+url = "2"
+
+[dev-dependencies]
+yibinu-mock-upstream = { path = "../mock-upstream" }
