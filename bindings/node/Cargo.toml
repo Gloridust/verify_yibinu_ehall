@@ -1,0 +1,23 @@
+[package]
+name = "yibinu-auth-node"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+vendored-openssl = ["yibinu-auth/vendored-openssl"]
+
+[dependencies]
+yibinu-auth = { path = "../../crates/yibinu-auth" }
+napi = { version = "3", default-features = false, features = ["napi6"] }
+napi-derive = "3"
+serde_json = "1"
+
+[build-dependencies]
+napi-build = "2"

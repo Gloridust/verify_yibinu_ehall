@@ -1,0 +1,20 @@
+[build-system]
+requires = ["maturin>=1.5,<2"]
+build-backend = "maturin"
+
+[project]
+name = "verify-yibinu"
+description = "宜宾学院统一身份认证登录验证（Rust 实现的 Python 绑定）"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+dynamic = ["version"]
+classifiers = ["Programming Language :: Rust", "Programming Language :: Python :: 3"]
+
+[project.scripts]
+verify-yibinu = "verify_yibinu:main"
+
+[tool.maturin]
+python-source = "python"
+module-name = "verify_yibinu._native"
+# 静态编译 OpenSSL：wheel 不依赖目标机器的 libssl
+features = ["pyo3/extension-module", "vendored-openssl"]
