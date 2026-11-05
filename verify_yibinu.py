@@ -56,6 +56,9 @@ FORM_SMS = "phoneFromId"
 # 页面脚本里 frontBackKey 缺失时的兜底（用于加密手机号）。优先使用页面实时下发的值。
 DEFAULT_FRONT_BACK_KEY = "rjBFAaHsNkKAhpoi"
 
+# 上游只支持 TLS 1.2：把客户端最高协议版本固定在 1.2，避免 1.3 握手失败
+TLS_MAX_VERSION = ssl.TLSVersion.TLSv1_2
+
 CaptchaSolver = Callable[[bytes], str]
 
 
@@ -89,16 +92,22 @@ class TLSAdapter(requests.adapters.HTTPAdapter):
     Custom TLS adapter to handle legacy SSL/TLS versions and ciphers.
 
     默认仍然校验证书；只有显式 ``verify_tls=False`` 才会关闭校验。
+
+    上游站点只支持 TLS 1.2，而 OpenSSL 3.x 默认会先发起 TLS 1.3 握手，
+    导致连接被重置 / ``UNEXPECTED_EOF_WHILE_READING``，因此默认把最高版本限制为 1.2。
     """
 
-    def __init__(self, *args, verify_tls: bool = True, **kwargs):
+    def __init__(self, *args, verify_tls: bool = True,
+                 max_tls_version: ssl.TLSVersion = TLS_MAX_VERSION, **kwargs):
         self._verify_tls = verify_tls
+        self._max_tls_version = max_tls_version
         super().__init__(*args, **kwargs)
 
     def init_poolmanager(self, *args, **kwargs):
         ctx = ssl.create_default_context()
         # Set security level to 1 to allow legacy ciphers if needed
         ctx.set_ciphers('DEFAULT@SECLEVEL=1')
+        ctx.maximum_version = self._max_tls_version
         if not self._verify_tls:
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE

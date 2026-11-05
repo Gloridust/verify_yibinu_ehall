@@ -6,7 +6,7 @@
 
 - **账号密码登录**：同步 wisedu 登录页的 AES-CBC 加密算法，支持图形验证码。
 - **短信验证码登录**：取图形验证码 → 发送短信 → 校验短信码，手机号按上游要求 AES 加密。
-- **Legacy TLS 支持**：内置 `TLSAdapter` 降级安全策略，解决 `UNEXPECTED_EOF_WHILE_READING` 握手异常。**默认校验证书**，仅在显式传 `--insecure` / `verify_tls=False` 时关闭。
+- **Legacy TLS 支持**：内置 `TLSAdapter` 降级安全策略，并**把最高协议版本固定为 TLS 1.2**（上游只支持 1.2，OpenSSL 3.x 默认先发 1.3 握手会导致 `UNEXPECTED_EOF_WHILE_READING` / 连接重置）。**默认校验证书**，仅在显式传 `--insecure` / `verify_tls=False` 时关闭。
 - **按表单作用域解析**：登录页同一 id 在多个表单中重复，脚本按 `pwdFromId` / `phoneFromId` 分别取 `lt`、`execution`、`pwdEncryptSalt`。
 - **滑块验证码检测**：上游 `captchaSwitch=2` 时会明确报错，而不是静默失败。
 
