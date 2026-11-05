@@ -5,6 +5,7 @@
 import base64
 import json
 import os
+import ssl
 import sys
 import unittest
 from urllib.parse import parse_qs, urlparse
@@ -105,6 +106,27 @@ class EncryptTests(unittest.TestCase):
 
     def test_random_each_time(self):
         self.assertNotEqual(v.encrypt_password("x", PWD_SALT), v.encrypt_password("x", PWD_SALT))
+
+
+class TLSAdapterTests(unittest.TestCase):
+    @staticmethod
+    def _ctx(adapter):
+        return adapter.poolmanager.connection_pool_kw["ssl_context"]
+
+    def test_max_version_pinned_to_tls12(self):
+        ctx = self._ctx(v.TLSAdapter())
+        self.assertEqual(ctx.maximum_version, ssl.TLSVersion.TLSv1_2)
+
+    def test_verification_on_by_default_and_off_when_requested(self):
+        self.assertEqual(self._ctx(v.TLSAdapter()).verify_mode, ssl.CERT_REQUIRED)
+        insecure = self._ctx(v.TLSAdapter(verify_tls=False))
+        self.assertEqual(insecure.verify_mode, ssl.CERT_NONE)
+        self.assertEqual(insecure.maximum_version, ssl.TLSVersion.TLSv1_2)
+
+    def test_client_uses_pinned_adapter(self):
+        client = v.YibinuAuth()
+        self.assertEqual(self._ctx(client.session.get_adapter("https://x")).maximum_version,
+                         ssl.TLSVersion.TLSv1_2)
 
 
 class ParseTests(unittest.TestCase):
